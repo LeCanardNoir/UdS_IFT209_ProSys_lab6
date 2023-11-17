@@ -67,11 +67,17 @@ MainEnd:
 
 Logarithme:
 	SAVE
+		// s0 == base, s1 == nombre
+		mov		x19, #2		// fractionStep
+		fmov	s20, #0		// result
+Logarithme_loop:
+		cbz		x19, Logarithme_loopEnd
 
+		sub		x19, #2
+		cbnz	x19, Logarithme_loop
 
-
-
-
+Logarithme_loopEnd:
+		fcvt	d0, s20
 
 logFin:
 	RESTORE
