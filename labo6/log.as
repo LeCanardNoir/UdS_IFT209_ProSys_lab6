@@ -45,8 +45,8 @@ Main:
 		bl		scanf		//Lecture d'un float au clavier
 
                             //Récupère les valeurs float A FAIRE!!!	
-		ldr		s0, [x20]	// base
-		ldr		s1, [x19]	// nombre
+		ldr		s0, [x19]	// base
+		ldr		s1, [x20]	// nombre
 
         
         bl		Logarithme
@@ -68,23 +68,33 @@ MainEnd:
 Logarithme:
 	SAVE
 		// s0 == base, s1 == nombre
-		ldr		s3, zeroFloat		// s1 / s0
+		ldr		s3, endPrecision
 		ldr		s4, zeroFloat		// result
-		ldr		s5, zeroFloat		// rootSqurt(s0) recurcive
+		fmov	s5, s0				// rootSqurt(s0) recurcive
 		ldr		s6, oneFloat		// chiffre 1
+		ldr		s7, twoFloat		// chiffre 2
 Logarithme_loopInt:
-		fdiv	s3, s1, s0
-		fadd	s4, s4, s6
-		fcmp	s3, s0
+		fcmp	s1, s0
 		b.lt	Logarithme_loopFloat
+		fdiv	s1, s1, s0
+		fadd	s4, s4, s6
 		b.al	Logarithme_loopInt
 
 Logarithme_loopFloat:
+		fcmp	s1, s3
+		b.lt	Logarithme_loopEnd
+
+		fsqrt	s5, s5
+		fcmp	s1, s5
+		b.lt	Logarithme_loopFloat
+		fdiv	s1, s1, s5
+		fadd	s4, s4, s6
+		b.al	Logarithme_loopFloat
 
 
 
 Logarithme_loopEnd:
-		fcvt	d0, s4
+		fcvt	d0, s1
 
 logFin:
 	RESTORE
@@ -111,3 +121,5 @@ scantemp:	.skip	 8
 delta:.single 0r0.00001
 zeroFloat: 		.single 0r0
 oneFloat: 		.single 0r1
+twoFloat: 		.single 0r2
+endPrecision:	.single 0r1.01
