@@ -40,18 +40,23 @@ Main:
 		adr		x0,scfmt1	//Param1: adresse du format de lecture
 		adr		x1,scantemp	//Param2: Place l'adresse du tampon dans x0
 		mov		x19,x1		//Conserve l'adresse du tampon dans x19
-		add		x2,x19,4
+		add		x2,x19,4	//2ième pointeur
+		mov		x20, x2
 		bl		scanf		//Lecture d'un float au clavier
 
                             //Récupère les valeurs float A FAIRE!!!	
-		
+		ldr		s0, [x19]	// base
+		ldr		s1, [x20]	// nombre
+
         
         bl		Logarithme
 
 		
                 
         adr		x0,ptfmt2	//Param1: adresse du message et format simple précision
-                            //Param2: A FAIRE!!
+       		    			//Param2: A FAIRE!!
+		//fcvt	d0, s0
+		//fcvt	d1, s1
 		bl 		printf		//Affichage simple précision
 
 MainEnd:
