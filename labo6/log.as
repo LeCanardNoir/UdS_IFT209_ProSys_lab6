@@ -44,19 +44,17 @@ Main:
 		mov		x20, x2
 		bl		scanf		//Lecture d'un float au clavier
 
-                            //Récupère les valeurs float A FAIRE!!!	
-		ldr		s0, [x19]	// base
-		ldr		s1, [x20]	// nombre
+                            //Récupère les valeurs float A FAIRE!!!
+		ldr		s1, [x19]	// base
+		ldr		s0, [x20]	// nombre
 
-        
         bl		Logarithme
 
-		
-                
+
+
         adr		x0,ptfmt2	//Param1: adresse du message et format simple précision
        		    			//Param2: A FAIRE!!
-		//fcvt	d0, s0
-		//fcvt	d1, s1
+		fcvt	d0, s0
 		bl 		printf		//Affichage simple précision
 
 MainEnd:
@@ -66,16 +64,44 @@ MainEnd:
 
 
 Logarithme:
-	SAVE
+		SAVE
+		fmov	s20, s1
+		fmov	s19, s0
+		ldr		s21, one
+		ldr		s22, two
+		ldr		s24, delta
+		fadd	s24, s24, s21
 
+		mov		x28, #0		//x28 contient le total entier
+		ucvtf	s27, x28
 
+Log_Entier_LoopCheck:
+		fcmp	s20, s19
+		b.lt	Log_Decimal_LoopCheck
 
+		add		x28, x28, #1
+		fdiv	s20, s20, s19
+		b.al	Log_Entier_LoopCheck
 
+Log_Decimal_LoopCheck:
+		fsqrt	s19, s19
+		fdiv	s21, s21, s22
+		fcmp	s20, s24
+		b.lt	logFin
 
+		fcmp	s20, s19
+		b.lt	Log_Decimal_LoopCheck
+
+		fdiv	s20, s20, s19
+		fadd	s27, s27, s21
+		b.al	Log_Decimal_LoopCheck
 
 logFin:
-	RESTORE
-	ret
+		ucvtf	s28, x28
+		fadd	s26, s28, s27
+		fmov	s0, s26
+		RESTORE
+		ret
 
 
 /* Formats de lecture et d'écriture pour printf et scanf */
@@ -96,3 +122,5 @@ scantemp:	.skip	 8
 .section ".data"
 
 delta:.single 0r0.00001
+one:.single 0r1.0
+two:.single 0r2.0
