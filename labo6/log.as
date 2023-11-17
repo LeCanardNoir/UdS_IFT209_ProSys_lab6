@@ -65,40 +65,40 @@ MainEnd:
 
 Logarithme:
 		SAVE
-		fmov	s20, s1
-		fmov	s19, s0
-		ldr		s21, one
-		ldr		s22, two
+		fmov	s20, s1		//s20 contient le nombre
+		fmov	s19, s0		//s19 contient la base
+		ldr		s21, one	//s21 contient la valeur d'exposant pour le calcul de la partie décimale
+		ldr		s22, two	//s22 contient 2 en float et ne sera JAMAIS modifié
 		ldr		s24, delta
-		fadd	s24, s24, s21
+		fadd	s24, s24, s21	//s24 contient 1 + delta
 
 		mov		x28, #0		//x28 contient le total entier
-		ucvtf	s27, x28
+		ucvtf	s27, x28	//s27 contient le total décimal
 
 Log_Entier_LoopCheck:
-		fcmp	s20, s19
+		fcmp	s20, s19	//Si NombreCourant < Base, on sort de la boucle
 		b.lt	Log_Decimal_LoopCheck
 
-		add		x28, x28, #1
-		fdiv	s20, s20, s19
-		b.al	Log_Entier_LoopCheck
+		add		x28, x28, #1	//la partie entière du total est incrémentée
+		fdiv	s20, s20, s19	//NombreCourant /= Base
+		b.al	Log_Entier_LoopCheck	//Retour au début de la boucle
 
 Log_Decimal_LoopCheck:
-		fsqrt	s19, s19
-		fdiv	s21, s21, s22
-		fcmp	s20, s24
-		b.lt	logFin
+		fsqrt	s19, s19	// base = sqrt(base)
+		fdiv	s21, s21, s22	// valeur d'exposant /= 2
+		fcmp	s20, s24	// Si NombreCourant < 1.000001 (précision)
+		b.lt	logFin		//STOP
 
-		fcmp	s20, s19
-		b.lt	Log_Decimal_LoopCheck
+		fcmp	s20, s19	//Si NombreCourant >= Base
+		b.lt	Log_Decimal_LoopCheck	//Sinon on revient à la boucle
 
-		fdiv	s20, s20, s19
-		fadd	s27, s27, s21
-		b.al	Log_Decimal_LoopCheck
+		fdiv	s20, s20, s19	//NombreCourant /= Base
+		fadd	s27, s27, s21	// total décimal += valeur d'exposant
+		b.al	Log_Decimal_LoopCheck	//On revient à la boucle
 
 logFin:
-		ucvtf	s28, x28
-		fadd	s26, s28, s27
+		ucvtf	s28, x28		//Conversion de la partie entière du total en float
+		fadd	s26, s28, s27	//s26 = Total = Partie entière + Partie décimale du total
 		fmov	s0, s26
 		RESTORE
 		ret
