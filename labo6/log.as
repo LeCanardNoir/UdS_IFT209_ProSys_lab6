@@ -68,29 +68,30 @@ MainEnd:
 Logarithme:
 	SAVE
 		// s0 == base, s1 == nombre
-		ldr		s3, endPrecision
+		ldr		s3, endPrecision	// limite de précision
+		ldr		s2, delta			// deltat
 		ldr		s4, zeroFloat		// result
 		fmov	s5, s0				// rootSqurt(s0) recurcive
 		ldr		s6, oneFloat		// chiffre 1
 		ldr		s7, oneFloat		// fraction
 		ldr		s8, twoFloat		// chiffre 2
 Logarithme_loopInt:
-		fcmp	s1, s0
+		fcmp	s1, s0				// si nombre < base
 		b.lt	Logarithme_loopFloat
-		fdiv	s1, s1, s0
-		fadd	s4, s4, s6
+		fdiv	s1, s1, s0			// nombre / base
+		fadd	s4, s4, s6			// resultat + 1
 		b.al	Logarithme_loopInt
 
 Logarithme_loopFloat:
-		fcmp	s1, s3
-		b.lt	Logarithme_loopEnd
+		fcmp	s1, s3				// si nombre < limite precision
+		b.lt	Logarithme_loopEnd	// sortir
 
-		fsqrt	s5, s5
-		fdiv	s7, s7, s8
-		fcmp	s1, s5
+		fsqrt	s5, s5				// squr(base) recursif == base^(1/2^n)
+		fdiv	s7, s7, s8			// 1/2^n
+		fcmp	s1, s5				// nombre < squr(base)
 		b.lt	Logarithme_loopFloat
-		fdiv	s1, s1, s5
-		fadd	s4, s4, s7
+		fdiv	s1, s1, s5			// nombre / base^(1/2^n)
+		fadd	s4, s4, s7			// resltat + 1/2^n
 		b.al	Logarithme_loopFloat
 
 
@@ -120,8 +121,8 @@ scantemp:	.skip	 8
 
 .section ".data"
 
-delta:.single 0r0.00001
+delta:			.single 0r0.00001
 zeroFloat: 		.single 0r0
 oneFloat: 		.single 0r1
 twoFloat: 		.single 0r2
-endPrecision:	.single 0r1.01
+endPrecision:	.single 0r1.00001
