@@ -72,7 +72,8 @@ Logarithme:
 		ldr		s4, zeroFloat		// result
 		fmov	s5, s0				// rootSqurt(s0) recurcive
 		ldr		s6, oneFloat		// chiffre 1
-		ldr		s7, twoFloat		// chiffre 2
+		ldr		s7, oneFloat		// fraction
+		ldr		s8, twoFloat		// chiffre 2
 Logarithme_loopInt:
 		fcmp	s1, s0
 		b.lt	Logarithme_loopFloat
@@ -85,16 +86,17 @@ Logarithme_loopFloat:
 		b.lt	Logarithme_loopEnd
 
 		fsqrt	s5, s5
+		fdiv	s7, s7, s8
 		fcmp	s1, s5
 		b.lt	Logarithme_loopFloat
 		fdiv	s1, s1, s5
-		fadd	s4, s4, s6
+		fadd	s4, s4, s7
 		b.al	Logarithme_loopFloat
 
 
 
 Logarithme_loopEnd:
-		fcvt	d0, s1
+		fcvt	d0, s4
 
 logFin:
 	RESTORE
